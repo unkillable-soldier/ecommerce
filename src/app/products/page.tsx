@@ -39,11 +39,11 @@ export default function ProductsPage() {
   const fetchProducts = async () => {
     try {
       const response = await fetch("/api/products")
-      const data = await response.json()
+      const data: Product[] = await response.json()
       setProducts(data)
       
       // Extract unique categories
-      const uniqueCategories = [...new Set(data.map((product: Product) => product.category))]
+      const uniqueCategories: string[] = [...new Set(data.map((product: Product) => product.category))]
       setCategories(uniqueCategories)
     } catch (error) {
       console.error("Error fetching products:", error)

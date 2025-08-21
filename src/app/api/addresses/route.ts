@@ -74,9 +74,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(address, { status: 201 })
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.log("Validation errors:", error.errors)
-      const errorMessage = error.errors && error.errors.length > 0 
-        ? error.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
+      console.log("Validation errors:", error.issues)
+      const errorMessage = error.issues && error.issues.length > 0 
+        ? error.issues.map(e => `${e.path.join('.')}: ${e.message}`).join(', ')
         : "Validation error"
       return NextResponse.json(
         { error: errorMessage },

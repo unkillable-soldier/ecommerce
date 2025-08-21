@@ -18,7 +18,7 @@ const addressSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -27,9 +27,11 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
+
     const address = await prisma.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -50,7 +52,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -59,13 +61,14 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const addressData = addressSchema.parse(body)
 
     // Check if address belongs to user
     const existingAddress = await prisma.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -79,22 +82,22 @@ export async function PUT(
       await prisma.address.updateMany({
         where: { 
           userId: session.user.id,
-          id: { not: params.id },
+          id: { not: id },
         },
         data: { isDefault: false },
       })
     }
 
     const address = await prisma.address.update({
-      where: { id: params.id },
+      where: { id: id },
       data: addressData,
     })
 
     return NextResponse.json(address)
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errorMessage = error.errors && error.errors.length > 0 
-        ? error.errors[0].message 
+      const errorMessage = error.issues && error.issues.length > 0 
+        ? error.issues[0].message 
         : "Validation error"
       return NextResponse.json(
         { error: errorMessage },
@@ -112,7 +115,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -121,10 +124,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
+
     // Check if address belongs to user
     const existingAddress = await prisma.address.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
     })
@@ -134,7 +139,7 @@ export async function DELETE(
     }
 
     await prisma.address.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ message: "Address deleted successfully" })

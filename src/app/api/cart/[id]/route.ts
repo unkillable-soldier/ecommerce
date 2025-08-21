@@ -10,7 +10,7 @@ const updateCartItemSchema = z.object({
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -22,11 +22,12 @@ export async function PATCH(
       )
     }
 
+    const { id } = await params
     const body = await request.json()
     const { quantity } = updateCartItemSchema.parse(body)
 
     const cartItem = await prisma.cartItem.findUnique({
-      where: { id: params.id },
+      where: { id: id },
       include: { product: true },
     })
 
@@ -45,7 +46,7 @@ export async function PATCH(
     }
 
     const updatedCartItem = await prisma.cartItem.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { quantity },
       include: { product: true },
     })
@@ -54,7 +55,7 @@ export async function PATCH(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: error.errors[0].message },
+        { error: error.issues[0].message },
         { status: 400 }
       )
     }
@@ -68,7 +69,7 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -80,8 +81,9 @@ export async function DELETE(
       )
     }
 
+    const { id } = await params
     const cartItem = await prisma.cartItem.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     if (!cartItem) {
@@ -99,7 +101,7 @@ export async function DELETE(
     }
 
     await prisma.cartItem.delete({
-      where: { id: params.id },
+      where: { id: id },
     })
 
     return NextResponse.json({ message: "Cart item removed" })

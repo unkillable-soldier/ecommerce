@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+
 import { Trash2, Minus, Plus, ShoppingBag, MapPin } from "lucide-react"
 import { toast } from "sonner"
+import QRCode from "qrcode"
 
 interface CartItem {
   id: string
@@ -40,11 +41,22 @@ export default function CartPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [showAddressModal, setShowAddressModal] = useState(false)
+  const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("")
+  const [paymentTimer, setPaymentTimer] = useState<number>(300) // 5 minutes = 300 seconds
+  const [isTimerRunning, setIsTimerRunning] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     fetchCartItems()
     fetchAddresses()
+  }, [])
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      setIsTimerRunning(false)
+    }
   }, [])
 
   const fetchCartItems = async () => {
@@ -112,6 +124,27 @@ export default function CartPage() {
     }
   }
 
+  const generateUPIQRCode = async (amount: number) => {
+    try {
+      // UPI QR code format: upi://pay?pa=UPI_ID&pn=MerchantName&am=Amount&tn=TransactionNote
+      const upiUrl = `upi://pay?pa=shrikrishnagaushala395-2@oksbi&pn=ShriKrishnaGaushala&am=${amount}&tn=E-commerce order`
+      
+      const qrCodeDataUrl = await QRCode.toDataURL(upiUrl, {
+        width: 200,
+        margin: 2,
+        color: {
+          dark: '#000000',
+          light: '#FFFFFF'
+        }
+      })
+      
+      setQrCodeDataUrl(qrCodeDataUrl)
+    } catch (error) {
+      console.error("Error generating QR code:", error)
+      toast.error("Failed to generate QR code")
+    }
+  }
+
   const checkout = async () => {
     if (!selectedAddressId) {
       toast.error("Please select a shipping address")
@@ -119,6 +152,40 @@ export default function CartPage() {
       return
     }
 
+    // Generate QR code for the total amount
+    const totalAmount = (total * 83).toFixed(0)
+    await generateUPIQRCode(parseFloat(totalAmount))
+    
+    // Show payment modal and start timer
+    setShowPaymentModal(true)
+    startPaymentTimer()
+  }
+
+  const startPaymentTimer = () => {
+    setIsTimerRunning(true)
+    setPaymentTimer(300) // Reset to 5 minutes
+    
+    const timer = setInterval(() => {
+      setPaymentTimer((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer)
+          setIsTimerRunning(false)
+          // Auto-complete payment when timer expires
+          completePayment()
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+  }
+
+  const formatTime = (seconds: number): string => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }
+
+  const completePayment = async () => {
     setIsCheckingOut(true)
     try {
       const response = await fetch("/api/orders", {
@@ -133,6 +200,7 @@ export default function CartPage() {
 
       if (response.ok) {
         toast.success("Order placed successfully!")
+        setShowPaymentModal(false)
         router.push("/orders")
       } else {
         const data = await response.json()
@@ -310,94 +378,262 @@ export default function CartPage() {
         </div>
       </div>
 
-      {/* Address Selection Modal */}
-      {showAddressModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <h3 className="text-lg font-bold mb-4 text-gray-800">📍 Select Shipping Address</h3>
-            
-            {addresses.length === 0 ? (
-              <div className="text-center py-8">
-                <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600 mb-4">No addresses found</p>
-                <Button
-                  onClick={() => {
-                    setShowAddressModal(false)
-                    router.push("/profile")
-                  }}
-                  className="bg-blue-500 hover:bg-blue-600 text-white"
-                >
-                  Add Address
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {addresses.map((address) => (
-                  <div
-                    key={address.id}
-                    className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
-                      selectedAddressId === address.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-gray-300"
-                    }`}
-                    onClick={() => setSelectedAddressId(address.id)}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <span className="text-sm font-bold text-gray-800">
-                            {address.type}
-                          </span>
-                          {address.isDefault && (
-                            <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
-                              Default
-                            </span>
-                          )}
+             {/* Address Selection Modal */}
+       {showAddressModal && (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+           <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+             <h3 className="text-lg font-bold mb-4 text-gray-800">📍 Select Shipping Address</h3>
+             
+             {addresses.length === 0 ? (
+               <div className="text-center py-8">
+                 <MapPin className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                 <p className="text-gray-600 mb-4">No addresses found</p>
+                 <Button
+                   onClick={() => {
+                     setShowAddressModal(false)
+                     router.push("/profile")
+                   }}
+                   className="bg-blue-500 hover:bg-blue-600 text-white"
+                 >
+                   Add Address
+                 </Button>
+               </div>
+             ) : (
+               <div className="space-y-4">
+                 {addresses.map((address) => (
+                   <div
+                     key={address.id}
+                     className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                       selectedAddressId === address.id
+                         ? "border-blue-500 bg-blue-50"
+                         : "border-gray-200 hover:border-gray-300"
+                     }`}
+                     onClick={() => setSelectedAddressId(address.id)}
+                   >
+                     <div className="flex items-start justify-between">
+                       <div className="flex-1">
+                         <div className="flex items-center space-x-2 mb-2">
+                           <span className="text-sm font-bold text-gray-800">
+                             {address.type}
+                           </span>
+                           {address.isDefault && (
+                             <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full font-medium">
+                               Default
+                             </span>
+                           )}
+                         </div>
+                         <p className="font-semibold text-gray-800">{address.fullName}</p>
+                         <p className="text-gray-600 text-sm">{address.phoneNumber}</p>
+                         <p className="text-gray-600 text-sm mt-1">
+                           {address.street}, {address.city}, {address.state} {address.postalCode}
+                         </p>
+                         <p className="text-gray-600 text-sm">{address.country}</p>
+                       </div>
+                       {selectedAddressId === address.id && (
+                         <div className="text-blue-500">
+                           <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                           </svg>
+                         </div>
+                       )}
+                     </div>
+                   </div>
+                 ))}
+                 
+                 <div className="flex space-x-2 pt-4">
+                   <Button
+                     onClick={() => setShowAddressModal(false)}
+                     className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
+                   >
+                     Cancel
+                   </Button>
+                   <Button
+                     onClick={() => {
+                       if (selectedAddressId) {
+                         setShowAddressModal(false)
+                         checkout()
+                       } else {
+                         toast.error("Please select an address")
+                       }
+                     }}
+                     className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
+                   >
+                     Continue to Checkout
+                   </Button>
+                 </div>
+               </div>
+             )}
+           </div>
+         </div>
+       )}
+
+       {/* Payment Modal */}
+       {showPaymentModal && (
+         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+           <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+             <h3 className="text-lg font-bold mb-4 text-gray-800">💳 Complete Payment</h3>
+             
+             <div className="space-y-6">
+               {/* Order Summary */}
+               <div className="bg-gray-50 rounded-lg p-4">
+                 <h4 className="font-semibold text-gray-800 mb-3">Order Summary</h4>
+                 <div className="space-y-2">
+                   {cartItems.map((item) => (
+                     <div key={item.id} className="flex justify-between text-sm">
+                       <span className="text-gray-600">
+                         {item.product.name} x {item.quantity}
+                       </span>
+                       <span className="text-gray-800 font-medium">
+                         ₹{(item.product.price * item.quantity * 83).toFixed(0)}
+                       </span>
+                     </div>
+                   ))}
+                   <div className="border-t pt-2 mt-2">
+                     <div className="flex justify-between font-bold text-lg">
+                       <span className="text-gray-800">Total</span>
+                       <span className="text-green-600">₹{(total * 83).toFixed(0)}</span>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+                               {/* UPI Payment Section */}
+                <div className="space-y-4">
+                  <div className="text-center">
+                    <h4 className="font-semibold text-gray-800 mb-2">Pay via UPI</h4>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Scan the QR code below to pay ₹{(total * 83).toFixed(0)}
+                    </p>
+                  </div>
+
+                  {/* QR Code Display */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+                    <div className="text-center">
+                      {qrCodeDataUrl ? (
+                        <div className="space-y-4">
+                          <div className="bg-white rounded-lg p-4 inline-block">
+                            <img 
+                              src={qrCodeDataUrl} 
+                              alt="UPI QR Code" 
+                              className="w-48 h-48 mx-auto"
+                            />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-700 mb-2">Amount to Pay</p>
+                            <p className="text-2xl font-bold text-green-600">₹{(total * 83).toFixed(0)}</p>
+                          </div>
                         </div>
-                        <p className="font-semibold text-gray-800">{address.fullName}</p>
-                        <p className="text-gray-600 text-sm">{address.phoneNumber}</p>
-                        <p className="text-gray-600 text-sm mt-1">
-                          {address.street}, {address.city}, {address.state} {address.postalCode}
-                        </p>
-                        <p className="text-gray-600 text-sm">{address.country}</p>
-                      </div>
-                      {selectedAddressId === address.id && (
-                        <div className="text-blue-500">
-                          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
+                      ) : (
+                        <div className="flex items-center justify-center h-48">
+                          <div className="text-gray-500">Generating QR code...</div>
                         </div>
                       )}
                     </div>
                   </div>
-                ))}
-                
-                <div className="flex space-x-2 pt-4">
-                  <Button
-                    onClick={() => setShowAddressModal(false)}
-                    className="flex-1 bg-gray-500 hover:bg-gray-600 text-white"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      if (selectedAddressId) {
-                        setShowAddressModal(false)
-                        checkout()
-                      } else {
-                        toast.error("Please select an address")
-                      }
-                    }}
-                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white"
-                  >
-                    Continue to Checkout
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+
+                  {/* UPI ID Display */}
+                  <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4">
+                    <div className="text-center">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Or use UPI ID manually</p>
+                      <div className="bg-white border border-gray-300 rounded-lg p-3">
+                        <p className="font-mono text-lg font-bold text-gray-600 break-all">
+                          shrikrishnagaushala395-2@oksbi
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText("shrikrishnagaushala395-2@oksbi")
+                          toast.success("UPI ID copied to clipboard!")
+                        }}
+                        className="mt-2 text-sm text-blue-600 hover:text-blue-700 underline"
+                      >
+                        Copy UPI ID
+                      </button>
+                    </div>
+                  </div>
+
+                                                     {/* Payment Timer */}
+                  <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
+                    <div className="text-center">
+                      <h5 className="font-semibold text-gray-800 mb-2">⏰ Payment Timer</h5>
+                      <div className="text-3xl font-bold text-red-600 mb-2">
+                        {formatTime(paymentTimer)}
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Complete your payment within this time. Order will be placed automatically.
+                      </p>
+                      {isTimerRunning && (
+                        <div className="mt-3">
+                          <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                              className="bg-red-500 h-2 rounded-full transition-all duration-1000"
+                              style={{ width: `${(paymentTimer / 300) * 100}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Payment Instructions */}
+                  <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4">
+                    <h5 className="font-semibold text-gray-800 mb-2">Payment Instructions:</h5>
+                    <ol className="text-sm text-gray-700 space-y-1 list-decimal list-inside">
+                      <li>Open your UPI app (Google Pay, PhonePe, Paytm, etc.)</li>
+                      <li>Tap on &quot;Scan QR Code&quot; or &quot;Pay via QR&quot;</li>
+                      <li>Scan the QR code above</li>
+                      <li>Verify the amount: <span className="font-semibold">₹{(total * 83).toFixed(0)}</span></li>
+                      <li>Complete the payment</li>
+                      <li>Wait for automatic order placement (or timer expires)</li>
+                    </ol>
+                    <div className="mt-3 p-3 bg-white rounded-lg">
+                                              <p className="text-xs text-gray-600">
+                          <strong>Alternative:</strong> If QR scanning doesn&apos;t work, use the UPI ID manually: 
+                          <span className="font-mono font-semibold"> shrikrishnagaushala395-2@oksbi</span>
+                        </p>
+                    </div>
+                  </div>
+
+                  {/* Status Message */}
+                  <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+                    <div className="text-center">
+                      <p className="text-sm text-gray-700">
+                        <strong>Status:</strong> {isCheckingOut ? "Processing your order..." : "Waiting for payment completion..."}
+                      </p>
+                      {isCheckingOut && (
+                        <div className="mt-2">
+                          <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex space-x-3 pt-4">
+                    <Button
+                      onClick={() => {
+                        setShowPaymentModal(false)
+                        setIsTimerRunning(false)
+                        setPaymentTimer(300)
+                      }}
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      Cancel Payment
+                    </Button>
+                    <Button
+                      onClick={completePayment}
+                      disabled={isCheckingOut || isTimerRunning}
+                      className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                    >
+                      {isCheckingOut ? "Processing..." : "Place Order Now"}
+                    </Button>
+                  </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       )}
     </div>
   )
 }
