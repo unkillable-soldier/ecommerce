@@ -43,6 +43,8 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (error) {
+    console.error("Registration error:", error)
+    
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: error.issues[0].message },
@@ -50,8 +52,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check for database connection errors
+    if (error instanceof Error) {
+      if (error.message.includes("connect") || error.message.includes("database")) {
+        return NextResponse.json(
+          { error: "Database connection error. Please check your DATABASE_URL configuration." },
+          { status: 500 }
+        )
+      }
+    }
+
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined },
       { status: 500 }
     )
   }

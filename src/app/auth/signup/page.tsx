@@ -158,7 +158,7 @@ export default function SignUpPage() {
           <div>
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md shadow-sm transition-colors duration-200"
               disabled={isLoading}
             >
               {isLoading ? "Creating account..." : "Create account"}

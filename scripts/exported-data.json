@@ -1,0 +1,350 @@
+{
+  "users": [
+    {
+      "id": "cmelc3m990000cxv87n5nmwth",
+      "name": "aajsk",
+      "email": "shrikrishnagaushala396@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$12$71tH1W.J13d2QvXS05EITuaOIOv4RMgqKrTba/G/3s9I0Ru3lGv9i",
+      "role": "USER",
+      "createdAt": "2025-08-21T11:44:36.717Z",
+      "updatedAt": "2025-08-21T11:44:36.717Z"
+    },
+    {
+      "id": "cmelc57wm0001cxv89nqnnn5q",
+      "name": "hh",
+      "email": "shrikrishnagaushala395@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$12$hAYx7hAA8JY1xK/.zKk.VeILE99YqEsyf2DUKpJi9wTeAc5nKFHja",
+      "role": "USER",
+      "createdAt": "2025-08-21T11:45:51.430Z",
+      "updatedAt": "2025-08-21T11:45:51.430Z"
+    },
+    {
+      "id": "cmelryem80000cxc0pct1k80b",
+      "name": "fdsjh",
+      "email": "krish@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$12$zQPgn0.IbHibExZX4/LuhuqwIiHdKl0fo.3Mh8ioFYyfPqVnL1dEy",
+      "role": "USER",
+      "createdAt": "2025-08-21T19:08:27.393Z",
+      "updatedAt": "2025-08-21T19:08:27.393Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "cmelc058q0000cxa42s9g5g02",
+      "name": "Wireless Bluetooth Headphones",
+      "description": "High-quality wireless headphones with noise cancellation and 30-hour battery life. Perfect for music lovers and professionals.",
+      "price": 99.99,
+      "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+      "category": "Electronics",
+      "stock": 50,
+      "createdAt": "2025-08-21T11:41:54.699Z",
+      "updatedAt": "2025-08-21T11:41:54.699Z"
+    },
+    {
+      "id": "cmelc058x0001cxa4f8pmvomx",
+      "name": "Smart Fitness Watch",
+      "description": "Advanced fitness tracker with heart rate monitoring, GPS, and water resistance. Track your workouts and stay healthy.",
+      "price": 199.99,
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+      "category": "Electronics",
+      "stock": 30,
+      "createdAt": "2025-08-21T11:41:54.705Z",
+      "updatedAt": "2025-08-21T11:41:54.705Z"
+    },
+    {
+      "id": "cmelc05920002cxa4lhhq8ye9",
+      "name": "Organic Cotton T-Shirt",
+      "description": "Comfortable and sustainable cotton t-shirt made from 100% organic materials. Available in multiple colors and sizes.",
+      "price": 29.99,
+      "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
+      "category": "Clothing",
+      "stock": 100,
+      "createdAt": "2025-08-21T11:41:54.710Z",
+      "updatedAt": "2025-08-21T11:41:54.710Z"
+    },
+    {
+      "id": "cmelc05960003cxa4aebtq8gy",
+      "name": "Leather Crossbody Bag",
+      "description": "Stylish and practical leather bag perfect for everyday use. Features multiple compartments and adjustable strap.",
+      "price": 79.99,
+      "image": "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+      "category": "Fashion",
+      "stock": 25,
+      "createdAt": "2025-08-21T11:41:54.715Z",
+      "updatedAt": "2025-08-21T11:41:54.715Z"
+    },
+    {
+      "id": "cmelc059b0004cxa4i1tiyu9i",
+      "name": "Stainless Steel Water Bottle",
+      "description": "Eco-friendly water bottle that keeps drinks cold for 24 hours or hot for 12 hours. Perfect for outdoor activities.",
+      "price": 24.99,
+      "image": "https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=400&h=400&fit=crop",
+      "category": "Home & Garden",
+      "stock": 75,
+      "createdAt": "2025-08-21T11:41:54.720Z",
+      "updatedAt": "2025-08-21T11:41:54.720Z"
+    },
+    {
+      "id": "cmelc059g0005cxa4mq4ceo6l",
+      "name": "Wireless Charging Pad",
+      "description": "Fast wireless charging pad compatible with all Qi-enabled devices. Sleek design with LED indicator.",
+      "price": 39.99,
+      "image": "https://images.unsplash.com/photo-1609592806596-b43bada6f5e3?w=400&h=400&fit=crop",
+      "category": "Electronics",
+      "stock": 40,
+      "createdAt": "2025-08-21T11:41:54.725Z",
+      "updatedAt": "2025-08-21T11:41:54.725Z"
+    },
+    {
+      "id": "cmelc059l0006cxa4i4xhtrjw",
+      "name": "Yoga Mat",
+      "description": "Premium non-slip yoga mat made from eco-friendly materials. Perfect for yoga, pilates, and fitness workouts.",
+      "price": 49.99,
+      "image": "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop",
+      "category": "Sports",
+      "stock": 60,
+      "createdAt": "2025-08-21T11:41:54.730Z",
+      "updatedAt": "2025-08-21T11:41:54.730Z"
+    },
+    {
+      "id": "cmelc059q0007cxa41l4cut7m",
+      "name": "Ceramic Coffee Mug Set",
+      "description": "Beautiful handcrafted ceramic mugs perfect for your morning coffee or tea. Set of 4 with matching saucers.",
+      "price": 34.99,
+      "image": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?w=400&h=400&fit=crop",
+      "category": "Home & Garden",
+      "stock": 45,
+      "createdAt": "2025-08-21T11:41:54.735Z",
+      "updatedAt": "2025-08-21T11:41:54.735Z"
+    }
+  ],
+  "orders": [
+    {
+      "id": "cmelc908g0003cxwslgjoodky",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 34.99,
+      "shippingAddressId": null,
+      "createdAt": "2025-08-21T11:48:48.112Z",
+      "updatedAt": "2025-08-21T11:48:48.112Z"
+    },
+    {
+      "id": "cmeld7hfi000bcxwsvv276ccp",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 169.96,
+      "shippingAddressId": null,
+      "createdAt": "2025-08-21T12:15:36.702Z",
+      "updatedAt": "2025-08-21T12:15:36.702Z"
+    },
+    {
+      "id": "cmeldc3g9000icxwsjl63zcz5",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 24.99,
+      "shippingAddressId": null,
+      "createdAt": "2025-08-21T12:19:11.865Z",
+      "updatedAt": "2025-08-21T12:19:11.865Z"
+    },
+    {
+      "id": "cmelkypfh0003cxesmttyv36f",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 79.98,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T15:52:44.093Z",
+      "updatedAt": "2025-08-21T15:52:44.093Z"
+    },
+    {
+      "id": "cmelmorid0003cxeg7ehncv8w",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 99.98,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T16:40:59.462Z",
+      "updatedAt": "2025-08-21T16:40:59.462Z"
+    },
+    {
+      "id": "cmelmquqx0009cxeg1lad4cqm",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 39.99,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T16:42:36.969Z",
+      "updatedAt": "2025-08-21T16:42:36.969Z"
+    },
+    {
+      "id": "cmelolxsy0003cxzg8m5kyvzc",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 39.99,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T17:34:46.883Z",
+      "updatedAt": "2025-08-21T17:34:46.883Z"
+    },
+    {
+      "id": "cmelopoxv0009cxzgm18v398d",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 24.99,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T17:37:42.019Z",
+      "updatedAt": "2025-08-21T17:37:42.019Z"
+    },
+    {
+      "id": "cmelowiau000hcxzgo8g3azpp",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 84.98,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T17:43:00.006Z",
+      "updatedAt": "2025-08-21T17:43:00.006Z"
+    },
+    {
+      "id": "cmelpheyo000ocxzgbiie0w65",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 99.99,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T17:59:15.456Z",
+      "updatedAt": "2025-08-21T17:59:15.456Z"
+    },
+    {
+      "id": "cmelpmw8e000ucxzgy5ixowue",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "status": "PENDING",
+      "total": 49.99,
+      "shippingAddressId": "cmelky7xy0001cxes98g36w59",
+      "createdAt": "2025-08-21T18:03:31.118Z",
+      "updatedAt": "2025-08-21T18:03:31.118Z"
+    }
+  ],
+  "orderItems": [
+    {
+      "id": "cmelc908g0005cxwsipi63te1",
+      "orderId": "cmelc908g0003cxwslgjoodky",
+      "productId": "cmelc059q0007cxa41l4cut7m",
+      "quantity": 1,
+      "price": 34.99
+    },
+    {
+      "id": "cmeld7hfi000dcxwszd4593l1",
+      "orderId": "cmeld7hfi000bcxwsvv276ccp",
+      "productId": "cmelc059l0006cxa4i4xhtrjw",
+      "quantity": 2,
+      "price": 49.99
+    },
+    {
+      "id": "cmeld7hfi000ecxwsiycjy3xq",
+      "orderId": "cmeld7hfi000bcxwsvv276ccp",
+      "productId": "cmelc059q0007cxa41l4cut7m",
+      "quantity": 2,
+      "price": 34.99
+    },
+    {
+      "id": "cmeldc3g9000kcxwsx6ytazuf",
+      "orderId": "cmeldc3g9000icxwsjl63zcz5",
+      "productId": "cmelc059b0004cxa4i1tiyu9i",
+      "quantity": 1,
+      "price": 24.99
+    },
+    {
+      "id": "cmelkypfh0005cxesqs9farzk",
+      "orderId": "cmelkypfh0003cxesmttyv36f",
+      "productId": "cmelc059g0005cxa4mq4ceo6l",
+      "quantity": 2,
+      "price": 39.99
+    },
+    {
+      "id": "cmelmorid0005cxeg37nxedun",
+      "orderId": "cmelmorid0003cxeg7ehncv8w",
+      "productId": "cmelc059l0006cxa4i4xhtrjw",
+      "quantity": 2,
+      "price": 49.99
+    },
+    {
+      "id": "cmelmquqx000bcxegx0zip084",
+      "orderId": "cmelmquqx0009cxeg1lad4cqm",
+      "productId": "cmelc059g0005cxa4mq4ceo6l",
+      "quantity": 1,
+      "price": 39.99
+    },
+    {
+      "id": "cmelolxsy0005cxzg0m0cd2k2",
+      "orderId": "cmelolxsy0003cxzg8m5kyvzc",
+      "productId": "cmelc059g0005cxa4mq4ceo6l",
+      "quantity": 1,
+      "price": 39.99
+    },
+    {
+      "id": "cmelopoxv000bcxzguhzyd3uh",
+      "orderId": "cmelopoxv0009cxzgm18v398d",
+      "productId": "cmelc059b0004cxa4i1tiyu9i",
+      "quantity": 1,
+      "price": 24.99
+    },
+    {
+      "id": "cmelowiau000jcxzguy8aam0y",
+      "orderId": "cmelowiau000hcxzgo8g3azpp",
+      "productId": "cmelc059l0006cxa4i4xhtrjw",
+      "quantity": 1,
+      "price": 49.99
+    },
+    {
+      "id": "cmelowiau000kcxzgd3wzv6i2",
+      "orderId": "cmelowiau000hcxzgo8g3azpp",
+      "productId": "cmelc059q0007cxa41l4cut7m",
+      "quantity": 1,
+      "price": 34.99
+    },
+    {
+      "id": "cmelpheyo000qcxzg5wrgwmhi",
+      "orderId": "cmelpheyo000ocxzgbiie0w65",
+      "productId": "cmelc058q0000cxa42s9g5g02",
+      "quantity": 1,
+      "price": 99.99
+    },
+    {
+      "id": "cmelpmw8e000wcxzg808stn0g",
+      "orderId": "cmelpmw8e000ucxzgy5ixowue",
+      "productId": "cmelc059l0006cxa4i4xhtrjw",
+      "quantity": 1,
+      "price": 49.99
+    }
+  ],
+  "cartItems": [
+    {
+      "id": "cmelpon5l000ycxzgsyapj68r",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "productId": "cmelc059g0005cxa4mq4ceo6l",
+      "quantity": 2,
+      "createdAt": "2025-08-21T18:04:52.666Z"
+    }
+  ],
+  "addresses": [
+    {
+      "id": "cmelky7xy0001cxes98g36w59",
+      "userId": "cmelc57wm0001cxv89nqnnn5q",
+      "type": "HOME",
+      "fullName": "Anikait",
+      "phoneNumber": "7982366745",
+      "street": "wwffffsf",
+      "city": "delhi",
+      "state": "reghi",
+      "postalCode": "110078",
+      "country": "India",
+      "isDefault": false,
+      "createdAt": "2025-08-21T15:52:21.430Z",
+      "updatedAt": "2025-08-21T15:52:21.430Z"
+    }
+  ],
+  "accounts": [],
+  "sessions": [],
+  "verificationTokens": []
+}
