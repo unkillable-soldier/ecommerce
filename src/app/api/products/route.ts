@@ -37,8 +37,20 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(products)
   } catch (error) {
+    console.error("Products API Error:", error)
+    
+    // Check for database connection errors
+    if (error instanceof Error) {
+      if (error.message.includes("connect") || error.message.includes("database")) {
+        return NextResponse.json(
+          { error: "Database connection error. Please check your DATABASE_URL configuration." },
+          { status: 500 }
+        )
+      }
+    }
+    
     return NextResponse.json(
-      { error: "Internal server error" },
+      { error: "Internal server error", details: process.env.NODE_ENV === 'development' ? (error as Error).message : undefined },
       { status: 500 }
     )
   }

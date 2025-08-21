@@ -13,7 +13,8 @@
     "db:export": "node scripts/export-data.js",
     "db:import": "node scripts/import-data.js",
     "db:deploy-turso": "node scripts/deploy-to-turso.js",
-    "db:deploy-turso-simple": "node scripts/deploy-to-turso-simple.js"
+    "db:deploy-turso-simple": "node scripts/deploy-to-turso-simple.js",
+    "db:test": "node scripts/test-db-connection.js"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -28,6 +29,7 @@
     "bcryptjs": "^3.0.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "dotenv": "^17.2.1",
     "lucide-react": "^0.540.0",
     "next": "15.5.0",
     "next-auth": "^4.24.11",
