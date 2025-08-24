@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { tursoHelpers } from "@/lib/turso"
 import { z } from "zod"
 
 const productSchema = z.object({
@@ -17,23 +18,47 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get("category")
     const search = searchParams.get("search")
 
-    const where: Record<string, unknown> = {}
+    // Try to use Turso first, fallback to Prisma
+    let products;
+    
+    try {
+      // Use libSQL client
+      products = await tursoHelpers.getAllProducts();
+      
+      // Apply filters if needed
+      if (category) {
+        products = products.filter((product: any) => product.category === category);
+      }
+      
+      if (search) {
+        const searchLower = search.toLowerCase();
+        products = products.filter((product: any) => 
+          product.name.toLowerCase().includes(searchLower) ||
+          product.description.toLowerCase().includes(searchLower)
+        );
+      }
+    } catch (tursoError) {
+      console.log('Turso products fetch failed, falling back to Prisma:', tursoError);
+      
+      // Fallback to Prisma
+      const where: Record<string, unknown> = {}
 
-    if (category) {
-      where.category = category
+      if (category) {
+        where.category = category
+      }
+
+      if (search) {
+        where.OR = [
+          { name: { contains: search, mode: "insensitive" } },
+          { description: { contains: search, mode: "insensitive" } },
+        ]
+      }
+
+      products = await prisma.product.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+      })
     }
-
-    if (search) {
-      where.OR = [
-        { name: { contains: search, mode: "insensitive" } },
-        { description: { contains: search, mode: "insensitive" } },
-      ]
-    }
-
-    const products = await prisma.product.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-    })
 
     return NextResponse.json(products)
   } catch (error) {
@@ -61,9 +86,29 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const productData = productSchema.parse(body)
 
-    const product = await prisma.product.create({
-      data: productData,
-    })
+    // Try to use Turso first, fallback to Prisma
+    let product;
+    
+    try {
+      // Use libSQL client
+      const { turso } = await import('@/lib/turso');
+      const productId = crypto.randomUUID();
+      
+      await turso.execute({
+        sql: `INSERT INTO Product (id, name, description, price, image, category, stock, createdAt, updatedAt) 
+              VALUES (?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
+        args: [productId, productData.name, productData.description, productData.price, productData.image, productData.category, productData.stock]
+      });
+      
+      product = { id: productId, ...productData, createdAt: new Date(), updatedAt: new Date() };
+    } catch (tursoError) {
+      console.log('Turso product creation failed, falling back to Prisma:', tursoError);
+      
+      // Fallback to Prisma
+      product = await prisma.product.create({
+        data: productData,
+      })
+    }
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {

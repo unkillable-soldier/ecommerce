@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth"
 import CredentialsProvider from "next-auth/providers/credentials"
 
 import { prisma } from "@/lib/prisma"
+import { tursoHelpers } from "@/lib/turso"
 import bcrypt from "bcryptjs"
 
 // Validate required environment variables
@@ -51,11 +52,21 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const user = await prisma.user.findUnique({
-            where: {
-              email: credentials.email
-            }
-          })
+          // Try to use Turso first, fallback to Prisma
+          let user;
+          
+          try {
+            // Use libSQL client
+            user = await tursoHelpers.getUserByEmail(credentials.email);
+          } catch (tursoError) {
+            console.log('Turso auth failed, falling back to Prisma:', tursoError);
+            // Fallback to Prisma
+            user = await prisma.user.findUnique({
+              where: {
+                email: credentials.email
+              }
+            });
+          }
 
           if (!user || !user.password) {
             return null
