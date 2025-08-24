@@ -27,6 +27,12 @@ export const turso = globalForTurso.turso ?? createTursoClient();
 
 if (process.env.NODE_ENV !== 'production') globalForTurso.turso = turso;
 
+// Helper function to convert libSQL Value to string
+function valueToString(value: any): string {
+  if (value === null || value === undefined) return '';
+  return String(value);
+}
+
 // Helper functions for common operations
 export const tursoHelpers = {
   // User operations
@@ -35,7 +41,18 @@ export const tursoHelpers = {
       sql: 'SELECT * FROM User WHERE id = ?',
       args: [id]
     });
-    return result.rows[0];
+    const row = result.rows[0];
+    if (!row) return null;
+    
+    return {
+      id: valueToString(row.id),
+      email: valueToString(row.email),
+      name: valueToString(row.name),
+      password: valueToString(row.password),
+      role: valueToString(row.role),
+      createdAt: valueToString(row.createdAt),
+      updatedAt: valueToString(row.updatedAt)
+    };
   },
 
   async getUserByEmail(email: string) {
@@ -43,7 +60,18 @@ export const tursoHelpers = {
       sql: 'SELECT * FROM User WHERE email = ?',
       args: [email]
     });
-    return result.rows[0];
+    const row = result.rows[0];
+    if (!row) return null;
+    
+    return {
+      id: valueToString(row.id),
+      email: valueToString(row.email),
+      name: valueToString(row.name),
+      password: valueToString(row.password),
+      role: valueToString(row.role),
+      createdAt: valueToString(row.createdAt),
+      updatedAt: valueToString(row.updatedAt)
+    };
   },
 
   async createUser(userData: {
@@ -56,7 +84,7 @@ export const tursoHelpers = {
     const result = await turso.execute({
       sql: `INSERT INTO User (id, email, name, password, role, createdAt, updatedAt) 
             VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`,
-      args: [userData.id, userData.email, userData.name, userData.password, userData.role || 'USER']
+      args: [userData.id, userData.email, userData.name || null, userData.password, userData.role || 'USER']
     });
     return result;
   },
@@ -64,7 +92,17 @@ export const tursoHelpers = {
   // Product operations
   async getAllProducts() {
     const result = await turso.execute('SELECT * FROM Product ORDER BY createdAt DESC');
-    return result.rows;
+    return result.rows.map(row => ({
+      id: valueToString(row.id),
+      name: valueToString(row.name),
+      description: valueToString(row.description),
+      price: Number(row.price),
+      image: valueToString(row.image),
+      category: valueToString(row.category),
+      stock: Number(row.stock),
+      createdAt: valueToString(row.createdAt),
+      updatedAt: valueToString(row.updatedAt)
+    }));
   },
 
   async getProductById(id: string) {
@@ -72,7 +110,20 @@ export const tursoHelpers = {
       sql: 'SELECT * FROM Product WHERE id = ?',
       args: [id]
     });
-    return result.rows[0];
+    const row = result.rows[0];
+    if (!row) return null;
+    
+    return {
+      id: valueToString(row.id),
+      name: valueToString(row.name),
+      description: valueToString(row.description),
+      price: Number(row.price),
+      image: valueToString(row.image),
+      category: valueToString(row.category),
+      stock: Number(row.stock),
+      createdAt: valueToString(row.createdAt),
+      updatedAt: valueToString(row.updatedAt)
+    };
   },
 
   // Cart operations
@@ -84,7 +135,16 @@ export const tursoHelpers = {
             WHERE ci.userId = ?`,
       args: [userId]
     });
-    return result.rows;
+    return result.rows.map(row => ({
+      id: valueToString(row.id),
+      userId: valueToString(row.userId),
+      productId: valueToString(row.productId),
+      quantity: Number(row.quantity),
+      name: valueToString(row.name),
+      price: Number(row.price),
+      image: valueToString(row.image),
+      createdAt: valueToString(row.createdAt)
+    }));
   },
 
   async addToCart(userId: string, productId: string, quantity: number = 1) {
@@ -106,7 +166,7 @@ export const tursoHelpers = {
     const result = await turso.execute({
       sql: `INSERT INTO "Order" (id, userId, total, shippingAddressId, createdAt, updatedAt) 
             VALUES (?, ?, ?, ?, datetime('now'), datetime('now'))`,
-      args: [orderData.id, orderData.userId, orderData.total, orderData.shippingAddressId]
+      args: [orderData.id, orderData.userId, orderData.total, orderData.shippingAddressId || null]
     });
     return result;
   },
@@ -116,6 +176,14 @@ export const tursoHelpers = {
       sql: 'SELECT * FROM "Order" WHERE userId = ? ORDER BY createdAt DESC',
       args: [userId]
     });
-    return result.rows;
+    return result.rows.map(row => ({
+      id: valueToString(row.id),
+      userId: valueToString(row.userId),
+      status: valueToString(row.status),
+      total: Number(row.total),
+      shippingAddressId: valueToString(row.shippingAddressId),
+      createdAt: valueToString(row.createdAt),
+      updatedAt: valueToString(row.updatedAt)
+    }));
   }
 };
